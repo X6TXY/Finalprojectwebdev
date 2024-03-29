@@ -6,4 +6,4 @@
 - Abylay Toremuratuly `22B031261`
 - Bakhauddin Toleu `22B030598`
 
-## Idea of project
+## The main idea of the project
