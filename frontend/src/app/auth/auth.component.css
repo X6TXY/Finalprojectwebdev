@@ -1,0 +1,50 @@
+@font-face {
+  font-family: AuthFont;
+  src: url("JKAbode-Demo.ttf");
+}
+
+.authcontent {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("bckgrnd.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: -1;
+}
+
+.centeringtextingsection {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.NamingAuth {
+  font-family: "AuthFont";
+}
+
+.textingsection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.signinsection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.signupsection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}

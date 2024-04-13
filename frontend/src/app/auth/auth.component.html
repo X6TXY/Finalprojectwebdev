@@ -1,0 +1,24 @@
+<div class="authcontent">
+  <div class="centeringtextingsection">
+    <div class="textingsection">
+      <h1 class="NamingAuth">Keruen</h1>
+      <button (click)="toggleForm()">
+        <p *ngIf="showSignUp">Sign Up</p>
+        <p *ngIf="!showSignUp">Sign In</p>
+      </button>
+
+      <div *ngIf="showSignUp" class="signinsection">
+        <input type="text" placeholder="Username" />
+        <input type="password" placeholder="Password" />
+        <button>Sign In</button>
+      </div>
+
+      <div *ngIf="!showSignUp" class="signupsection">
+        <input type="text" placeholder="Username" />
+        <input type="password" placeholder="Password" />
+        <input type="password2" placeholder="Password Repeat" />
+        <button>Sign Up</button>
+      </div>
+    </div>
+  </div>
+</div>
