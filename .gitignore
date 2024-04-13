@@ -38,6 +38,10 @@ testem.log
 /typings
 
 
+node_modules
+.angular
+.DS_Store
+
 .DS_Store
 Thumbs.db
 venv/
