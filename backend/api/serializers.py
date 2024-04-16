@@ -1,37 +1,76 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
-from .models import Category, Product
-
-from rest_framework import serializers
+from .models import Product, Category,Review,User
+from django.contrib.auth.hashers import make_password
 
 
 
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta(object):
-        model = User
-        fields = ["id", "username", "password", "email"]
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id','name', 'description'] 
+        fields = ['id', 'name', 'description']
 
-class ProductSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
 
-    category_details = CategorySerializer(source='category', read_only=True)
 
-    category = serializers.PrimaryKeyRelatedField(
-        queryset=Category.objects.all(), write_only=True
-    )
+class UserSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    password = serializers.CharField()
+    email = serializers.EmailField()
 
-    image = serializers.ImageField(max_length=None, allow_empty_file=True, required=False)
+    def create(self, validated_data):
+        validated_data["password"] = make_password(validated_data["password"])
+        user = User.objects.create(**validated_data)
+        return user
+
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    user_details = UserSerializer(source='user', read_only=True)  
 
     class Meta:
+        model = Review
+        fields = ['id', 'product_id', 'user_id', 'user_details', 'content', 'rating']
+
+
+
+
+class ProductSerializer(serializers.Serializer):
+    class Meta:
         model = Product
-        fields = [
-            'id', 'user', 'name', 'image', 'description', 'brand',
-            'category', 'category_details', 'rating', 'price', 'createdAt'
-        ]
-        extra_kwargs = {'_id': {'read_only': True}}
+        fields = ['id', 'user', 'name','image', 'description', 'brand','category_id','rating','price']
+
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(max_length=255)
+    image = serializers.CharField(max_length=255)
+    description = serializers.CharField(max_length=255)
+    brand =serializers.CharField(max_length=255)
+    category_id = serializers.IntegerField()  
+    rating = serializers.IntegerField()
+    price = serializers.FloatField()
+
+
+
+    def create(self, validated_data):
+        category = Category.objects.get(pk=validated_data['category_id'])
+        return Product.objects.create(category=category, **validated_data)
+
+    def update(self, instance, validated_data):
+
+        instance.name = validated_data.get('name', instance.name)
+        instance.image = validated_data.get('image', instance.image)
+        instance.description = validated_data.get('description', instance.description)
+        instance.brand = validated_data.get('brand', instance.brand)
+        instance.rating = validated_data.get('rating', instance.rating)
+        instance.price = validated_data.get('price', instance.price)
+
+        category_id = validated_data.get('category_id')
+
+        if category_id :
+            instance.category = category_id
+        instance.save()
+        return instance
+    
+
+
