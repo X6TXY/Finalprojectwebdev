@@ -6,9 +6,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./auth.component.css']
 })
 export class AuthComponent {
-  showSignUp: boolean = true;
+  isSignUp: boolean = false;
 
-  toggleForm() {
-    this.showSignUp = !this.showSignUp;
+  toggleSignUp(): void {
+    this.isSignUp = !this.isSignUp;
   }
 }
