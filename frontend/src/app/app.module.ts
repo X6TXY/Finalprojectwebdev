@@ -12,6 +12,12 @@ import { ProductDetailsComponent } from './product-details/product-details.compo
 import { ProductListComponent } from './product-list/product-list.component';
 import { ShippingComponent } from './shipping/shipping.component';
 
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AddproductComponent } from './addproduct/addproduct.component';
+import { HeadingComponent } from './heading/heading.component';
+import { AuthInterceptor } from './interceptor/auth-interceptor.interceptor';
+import { UpdateproductComponent } from './updateproduct/updateproduct.component';
+
 
 @NgModule({
   imports: [
@@ -19,13 +25,15 @@ import { ShippingComponent } from './shipping/shipping.component';
     FormsModule,
     HttpClientModule,
     ReactiveFormsModule,
-    NgbModule,
+    NgbModule,RouterModule,
     RouterModule.forRoot([
-      { path: '', component: AuthComponent },
-      {path:'home', component: ProductListComponent},
-      { path: 'products/:productId', component: ProductDetailsComponent },
+      { path: 'auth', component: AuthComponent },
+      {path:'', component: ProductListComponent},
+      {path:'updateproduct/:id', component: UpdateproductComponent},
+      { path: 'products/:id', component: ProductDetailsComponent },
       { path: 'cart', component: CartComponent },
       { path: 'shipping', component: ShippingComponent },
+      {path:'addproduct', component: AddproductComponent},
 
     ]),
   ],
@@ -37,7 +45,13 @@ import { ShippingComponent } from './shipping/shipping.component';
     ProductDetailsComponent,
     CartComponent,
     ShippingComponent,
+    HeadingComponent,
+    AddproductComponent,
+    UpdateproductComponent
 
+  ],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })

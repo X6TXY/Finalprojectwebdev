@@ -9,8 +9,7 @@ from rest_framework import status
 
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import CategorySerializer, ProductSerializer,ReviewSerializer,UserSerializer
-
-
+from rest_framework.permissions import IsAuthenticated
 
 # 3 FBV views
 @csrf_exempt
@@ -38,25 +37,31 @@ def category_prodcuts(request,id):
 
 # CBV 5 views
 
+from rest_framework.permissions import IsAuthenticated
+
 class ProductList(APIView):
-    def get(self,request):
+    
+
+    def get(self, request):
         products = Product.objects.all()
-        serializer = ProductSerializer(products,many=True)
+        serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
+
     
 
 
+class ProductPost(APIView):
+
     def post(self, request):
-
-        stream = request.stream
-
-        data = JSONParser().parse(stream)  
-        serializer = ProductSerializer(data=data)  
+        data = JSONParser().parse(request)
+        serializer = ProductSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+
+
 class ProductDetail(APIView):
     def get_object(self,id):
         try:
@@ -99,7 +104,7 @@ class ReviewList(APIView):
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
     
 class ReviewDetial(APIView):
-     
+
     def get_object(self,id):
         try:
             return Review.objects.get(pk=id)

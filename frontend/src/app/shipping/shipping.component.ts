@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../services/auth.service';
 
 
 @Component({
@@ -6,6 +7,14 @@ import { Component } from '@angular/core';
   templateUrl: './shipping.component.html',
   styleUrls: ['./shipping.component.css']
 })
-export class ShippingComponent  {
-  
+export class ShippingComponent implements OnInit  {
+  isLoggedIn: boolean | undefined;
+
+  constructor(private authService: AuthService) {}
+
+  ngOnInit() {
+    this.isLoggedIn = this.authService.isLoggedIn(); // Check login status on component initialization
+  }
+
+ 
 }

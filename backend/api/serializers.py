@@ -46,7 +46,7 @@ class ProductSerializer(serializers.Serializer):
     image = serializers.CharField(max_length=255)
     description = serializers.CharField(max_length=255)
     brand =serializers.CharField(max_length=255)
-    category_id = serializers.IntegerField()  
+    category_id = serializers.IntegerField(read_only=True)  
     rating = serializers.IntegerField()
     price = serializers.FloatField()
 

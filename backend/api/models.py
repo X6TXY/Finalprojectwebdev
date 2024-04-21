@@ -33,7 +33,7 @@ class Product(models.Model):
 
 
 
-# Review Model in this model we have 1 relation User
+# Review Model in this model we have 2 relation Product and User
 class Review(models.Model):
     id = models.AutoField(primary_key=True,editable=True)
     product = models.ForeignKey(Product, related_name='reviews', on_delete=models.CASCADE)
