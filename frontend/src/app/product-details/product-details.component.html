@@ -58,4 +58,52 @@
   </div>
 </div>
 
-<div class="review-list"></div>
+<div class="flex justify-center h-96">
+  <div *ngIf="isLoggedIn" class="review-form">
+    <h3 class="text-xl text-[#5A9194]">Write a Review</h3>
+    <form (ngSubmit)="submitReview()">
+      <textarea
+        [(ngModel)]="reviewContent"
+        name="content"
+        rows="4"
+        placeholder="Enter your review here..."
+        required
+        class="w-full p-2 border bg-white"
+      ></textarea>
+      <label for="rating" class="text-[#5A9194] text-xl">Rating:</label>
+      <select
+        [(ngModel)]="reviewRating"
+        name="rating"
+        required
+        class="p-2 border"
+      >
+        <option value="">Select a rating</option>
+        <option *ngFor="let num of [1, 2, 3, 4, 5]" [value]="num">
+          {{ num }}
+        </option>
+      </select>
+      <button type="submit" class="btn bg-green-500 text-white ml-52">
+        Submit Review
+      </button>
+    </form>
+  </div>
+
+  <div *ngIf="reviews.length > 0" class="review-section">
+    <h2 class="text-3xl text-[#5A9194]">Reviews</h2>
+    <div *ngFor="let review of reviews" class="review-item">
+      <p>{{ review.content }}</p>
+      <div class="rating">
+        <span *ngFor="let star of getRatingStars(review.rating); let i = index">
+          <input
+            type="radio"
+            name="rating-2"
+            class="mask mask-star-2 bg-orange-400"
+          />
+        </span>
+        <span *ngFor="let empty of getEmptyStars(review.rating); let i = index">
+          <input type="radio" name="rating-2" class="mask mask-star-2" />
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -13,11 +13,12 @@ import { ProductListComponent } from './product-list/product-list.component';
 import { ShippingComponent } from './shipping/shipping.component';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { Ng5SliderModule } from 'ng5-slider';
 import { AddproductComponent } from './addproduct/addproduct.component';
 import { HeadingComponent } from './heading/heading.component';
 import { AuthInterceptor } from './interceptor/auth-interceptor.interceptor';
 import { UpdateproductComponent } from './updateproduct/updateproduct.component';
-
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
 
 @NgModule({
   imports: [
@@ -34,8 +35,9 @@ import { UpdateproductComponent } from './updateproduct/updateproduct.component'
       { path: 'cart', component: CartComponent },
       { path: 'shipping', component: ShippingComponent },
       {path:'addproduct', component: AddproductComponent},
-
+      
     ]),
+    NgxSliderModule,
   ],
   declarations: [
     AppComponent,

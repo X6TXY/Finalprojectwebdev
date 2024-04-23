@@ -27,14 +27,16 @@ class UserSerializer(serializers.Serializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    user_details = UserSerializer(source='user', read_only=True)  
-
     class Meta:
         model = Review
-        fields = ['id', 'product_id', 'user_id', 'user_details', 'content', 'rating']
+        fields = ['id', 'product', 'user', 'content', 'rating']
+        read_only_fields = ['user'] 
+    rating = serializers.IntegerField()
 
-
-
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
+    
 
 class ProductSerializer(serializers.Serializer):
     class Meta:

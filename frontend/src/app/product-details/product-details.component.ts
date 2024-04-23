@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Category, Product } from '../models/models';
+import { Category, Product, Review } from '../models/models';
 import { AuthService } from '../services/auth.service';
 import { CategoryService } from '../services/category.service';
 import { ProductService } from '../services/product.service';
+import { ReviewService } from '../services/review.service';
 
 @Component({
   selector: 'app-product-details',
@@ -14,26 +15,57 @@ export class ProductDetailsComponent implements OnInit {
   product: Product | undefined;
   category: Category | undefined;
   isLoggedIn: boolean | undefined;
+  reviews: Review[] = [];
+  reviewContent: string = '';
+  reviewRating: number | null = null;
+  productId: number | null = null;
 
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private reviewService: ReviewService  
   ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      const id = +params['id']; 
-      if (!isNaN(id) && id > 0) { 
-        this.getProductById(id);
-      } else {
-        console.error('Invalid ID:', id);
-        this.router.navigate(['/']);
-      }
+        this.productId = +params['id'];
+        if (this.productId && this.productId > 0) {
+            this.getProductById(this.productId);
+            this.getReviews(this.productId);
+        } else {
+            console.error('Invalid ID:', this.productId);
+            this.router.navigate(['/']);
+        }
     });
+}
+
+
+submitReview(): void {
+  if (!this.productId || this.reviewRating === null) {
+      console.error('Product details or rating missing!');
+      return;
   }
+
+  const newReview: Review = {
+      product: this.productId,
+      content: this.reviewContent,
+      rating: this.reviewRating
+  };
+
+  this.reviewService.createReview(newReview).subscribe({
+      next: review => {
+          this.reviews.push(review);
+          this.reviewContent = '';
+          this.reviewRating = null;
+          console.log('Review submitted successfully!');
+      },
+      error: error => console.error('Failed to submit review:', error)
+  });
+}
+
 
   getProductById(id: number): void {
     this.isLoggedIn = this.authService.isLoggedIn();
@@ -48,6 +80,15 @@ export class ProductDetailsComponent implements OnInit {
         }
       },
       error => console.error('Error fetching product:', error)
+    );
+  }
+
+  getReviews(productId: number): void {
+    this.reviewService.getReviews(productId).subscribe(
+      reviews => {
+        this.reviews = reviews;
+      },
+      error => console.error('Error fetching reviews:', error)
     );
   }
   

@@ -27,3 +27,25 @@ export interface Category{
     id:number;
     name:string;
 }
+
+
+export interface PaginatedProducts {
+    count: number;
+    next: string | null;
+    previous: string | null;
+    results: Product[];
+}
+  
+
+export interface Review {
+    product: number;
+    content: string;
+    rating: number;
+    
+}
+
+export interface ShippingDetails {
+    address: string;
+    city: string;
+    postalCode: string;
+}

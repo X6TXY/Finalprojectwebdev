@@ -9,7 +9,16 @@ from rest_framework import status
 
 from django.views.decorators.csrf import csrf_exempt
 from .serializers import CategorySerializer, ProductSerializer,ReviewSerializer,UserSerializer
+
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import generics
+
+from django.db.models import Q
+from django_filters import rest_framework as filters
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 # 3 FBV views
 @csrf_exempt
@@ -35,18 +44,55 @@ def category_prodcuts(request,id):
 
 
 
+
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10  
+    page_size_query_param = 'page_size'  
+    max_page_size = 100 
+
+
+class ProductFilter(filters.FilterSet):
+    price_from = filters.NumberFilter(field_name="price", lookup_expr='gte')
+    price_to = filters.NumberFilter(field_name="price", lookup_expr='lte')
+    rating = filters.NumberFilter(field_name="rating")
+
+    class Meta:
+        model = Product
+        fields = ['category__name', 'price_from', 'price_to', 'rating']
+
+
 # CBV 5 views
+class ProductList(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    pagination_class = StandardResultsSetPagination
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_class = ProductFilter 
+    ordering_fields = ['price', 'category__name', 'rating']
+    ordering = ['price', 'rating']
 
-from rest_framework.permissions import IsAuthenticated
+    def get_queryset(self):
+     
+        queryset = super().get_queryset()
+        price_from = self.request.query_params.get('price_from')
+        price_to = self.request.query_params.get('price_to')
+        rating = self.request.query_params.get('rating')
 
-class ProductList(APIView):
-    
 
-    def get(self, request):
-        products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
+        conditions = Q()
 
+        if price_from and price_to:
+            conditions &= Q(price__gte=price_from, price__lte=price_to)
+
+        if rating:
+            conditions &= Q(rating=rating)
+
+
+        if conditions:
+            queryset = queryset.filter(conditions)
+
+        return super().get_queryset()
     
 
 
@@ -89,19 +135,29 @@ class ProductDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class ReviewList(APIView):
+    permission_classes = [IsAuthenticated]
 
-    def get(self,request):
-        reviews = Review.objects.all()
-        serializer = ReviewSerializer(reviews,many=True)
+    def get(self, request):
+
+        product_id = request.query_params.get('product_id')
+        if product_id:
+
+            reviews = Review.objects.filter(product_id=product_id)
+        else:
+
+            reviews = Review.objects.all()
+        serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
     
-    def post(self,request):
-        data = JSONParser().parse(request)
-        serializer = ReviewSerializer(data=data)
+    def post(self, request):
+        print(request.data) 
+        serializer = ReviewSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print(serializer.errors)  
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class ReviewDetial(APIView):
 

@@ -4,21 +4,48 @@
   <div class="categories">
     <h1 class="text-2xl text-[#5A9194] font-medium">Category</h1>
     <hr class="mt-2 mb-2" />
-    <div *ngFor="let category of categories">
-      <h1 class="font-medium text-xl">{{ category.name }}</h1>
-    </div>
+
+    <button
+      *ngFor="let category of categories"
+      (click)="filterByCategory(category.name)"
+      class="btn mr-2 btn-outline text-[#5A9194] hover:bg-[#5A9194]"
+    >
+      {{ category.name }}
+    </button>
   </div>
-  <div class="price-range">
-    <h1 class="text-2xl text-[#5A9194] font-medium">Price</h1>
+  <div>
+    <label class="text-2xl text-[#5A9194] font-medium">Price Range:</label>
     <hr class="mt-2 mb-2" />
-    <input
-      type="range"
-      min="0"
-      max="100"
-      value="40"
-      class="range range-xs bg-white"
-    />
+
+    <ngx-slider
+      [(value)]="minPrice"
+      [(highValue)]="maxPrice"
+      [options]="options"
+    ></ngx-slider>
+
+    <div class="flex justify-between">
+      <span>${{ minPrice }}</span>
+      <span>${{ maxPrice }}</span>
+    </div>
+    <label class="text-2xl text-[#5A9194] font-medium mt-2">Rating:</label>
+    <hr class="mt-2 mb-2" />
+    <select
+      [(ngModel)]="selectedRating"
+      class="select select-bordered bg-white w-full mb-2"
+    >
+      <option value="">All Ratings</option>
+      <option *ngFor="let r of [1, 2, 3, 4, 5]" [value]="r">
+        {{ r }} Stars
+      </option>
+    </select>
+    <button
+      class="btn btn-outline text-[#5A9194] flex justify-center items-center"
+      (click)="applyFilters()"
+    >
+      Apply
+    </button>
   </div>
+
   <div class="sort">
     <h1 class="text-2xl text-[#5A9194] font-medium">Sort</h1>
     <hr class="mt-2 mb-2" />
@@ -28,10 +55,16 @@
     <button class="btn btn-outline text-[#5A9194] bg-gray-100">
       What's New?
     </button>
-    <button class="btn btn-outline text-[#5A9194] bg-gray-100">
+    <button
+      class="btn btn-outline text-[#5A9194] bg-gray-100"
+      (click)="sortByPrice('desc')"
+    >
       Price high to low
     </button>
-    <button class="btn btn-outline text-[#5A9194] bg-gray-100">
+    <button
+      class="btn btn-outline text-[#5A9194] bg-gray-100"
+      (click)="sortByPrice('asc')"
+    >
       Price low to high
     </button>
   </div>
