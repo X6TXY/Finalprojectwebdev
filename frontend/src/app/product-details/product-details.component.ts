@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category, Product, Review } from '../models/models';
 import { AuthService } from '../services/auth.service';
+import { CartService } from '../services/cart.service';
 import { CategoryService } from '../services/category.service';
 import { ProductService } from '../services/product.service';
 import { ReviewService } from '../services/review.service';
@@ -24,6 +25,7 @@ export class ProductDetailsComponent implements OnInit {
     private productService: ProductService,
     private categoryService: CategoryService,
     private route: ActivatedRoute,
+    private cartService: CartService,
     private router: Router,
     private authService: AuthService,
     private reviewService: ReviewService  
@@ -83,6 +85,14 @@ submitReview(): void {
     );
   }
 
+  addToCart(productId: number): void {
+    this.cartService.addProductToCart(productId).subscribe({
+        next: (response) => {
+            console.log('Product added to cart successfully!', response);
+        },
+        error: (error) => console.error('Error adding product to cart:', error)
+    });
+}
   getReviews(productId: number): void {
     this.reviewService.getReviews(productId).subscribe(
       reviews => {

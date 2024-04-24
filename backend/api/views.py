@@ -8,7 +8,8 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from django.views.decorators.csrf import csrf_exempt
-from .serializers import CategorySerializer, ProductSerializer,ReviewSerializer,UserSerializer
+from .serializers import CategorySerializer, ProductSerializer,ReviewSerializer,UserSerializer,CartSerializer, CartItemSerializer
+
 
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import OrderingFilter
@@ -18,7 +19,10 @@ from rest_framework import generics
 from django.db.models import Q
 from django_filters import rest_framework as filters
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from .models import Cart, CartItem, Product
+
+
+
 
 # 3 FBV views
 @csrf_exempt
@@ -158,7 +162,7 @@ class ReviewList(APIView):
         else:
             print(serializer.errors)  
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 class ReviewDetial(APIView):
 
     def get_object(self,id):
@@ -194,3 +198,35 @@ class UserSignUpAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+
+class CartView(APIView):
+    def get(self, request):
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        serializer = CartSerializer(cart)
+        return Response(serializer.data)
+    
+class AddCartItemView(APIView):
+    def post(self, request, product_id):
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        product = get_object_or_404(Product, pk=product_id)
+        item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+        if not created:
+            item.quantity += 1
+            item.save()
+        serializer = CartItemSerializer(item)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class UpdateCartItemView(APIView):
+    def put(self, request, item_id):
+        item = get_object_or_404(CartItem, id=item_id)
+        item.quantity = request.data.get('quantity', item.quantity)
+        item.save()
+        return Response(CartItemSerializer(item).data)
+
+class DeleteCartItemView(APIView):
+    def delete(self, request, item_id):
+        item = get_object_or_404(CartItem, id=item_id)
+        item.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

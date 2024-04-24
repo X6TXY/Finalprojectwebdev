@@ -44,8 +44,15 @@ export interface Review {
     
 }
 
-export interface ShippingDetails {
-    address: string;
-    city: string;
-    postalCode: string;
-}
+
+export interface CartItem {
+    id: any;
+    product: number;
+    quantity: number;
+  }
+  
+export interface Cart {
+    items: CartItem[];
+    enrichedItems?: any[];
+  }
+

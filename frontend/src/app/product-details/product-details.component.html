@@ -38,6 +38,7 @@
     </div>
     <button
       class="btn bg-green-500 border-none hover:bg-green-600 text-white mt-4 flex w-full"
+      (click)="product && addToCart(product.id)"
     >
       Add to Bag
     </button>

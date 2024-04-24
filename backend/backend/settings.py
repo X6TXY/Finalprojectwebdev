@@ -106,7 +106,7 @@ REST_FRAMEWORK = {
 }
 
 
-
+APPEND_SLASH = False
 
 LANGUAGE_CODE = "en-us"
 
